@@ -4,7 +4,7 @@ Plugin Name: Project Honey Pot Http:BL
 Plugin URI: http://omninoggin.com
 Description: Project Honey Pot http:BL allows you to verify IP addresses of clients connecting to your blog against the <a href="http://www.projecthoneypot.org/?rf=45626">Project Honey Pot</a> database.
 Author: Thaya Kareeson
-Version: 1.0
+Version: 1.0.1
 Author URI: http://omninoggin.com
 */
 

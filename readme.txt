@@ -4,7 +4,7 @@ Contributors: Thaya Kareeson
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=madeinthayaland@gmail.com&currency_code=USD&amount=&return=&item_name=Donate+a+cup+of+coffee+or+two+for+Project+Honey+Pot+HttpBL+WordPress+Plugin
 Requires at least: 2.5
 Tested up to: 2.5.1
-Stable Tag: 1.0
+Stable Tag: 1.0.1
 
 Project Honey Pot Http:BL allows you to verify IP addresses of clients connecting to your blog against the <a href="http://www.projecthoneypot.org/?rf=45626">Project Honey Pot</a> database.
 
@@ -38,7 +38,7 @@ usability issues that the original plugin had.
    bot trap URL here.
 6. (optional) Disable logging or 'Log only blocked visitors' if you want to save
    database space.
-7. (optional) Enable statistics display and place httpbl_stats() in your theme.
+7. (optional) Enable statistics display and place php_httpbl_stats() in your theme.
 
 == Frequently Asked Questions ==
 
@@ -57,6 +57,8 @@ I would rather make this plugin cacheable and plug-and-play than release a hack.
 
 == Changelog ==
 
+1.0.1
+- Fixed readme.txt typo to use php_httpbl_stats() instead of httpbl_stats()
 1.0
 - Initial release
 - Fixed database bugs
