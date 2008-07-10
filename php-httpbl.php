@@ -4,7 +4,7 @@ Plugin Name: Project Honey Pot Http:BL
 Plugin URI: http://omninoggin.com
 Description: Project Honey Pot http:BL allows you to verify IP addresses of clients connecting to your blog against the <a href="http://www.projecthoneypot.org/?rf=45626">Project Honey Pot</a> database.
 Author: Thaya Kareeson
-Version: 1.0.1
+Version: 1.1.0
 Author URI: http://omninoggin.com
 */
 
@@ -341,7 +341,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     if ( get_option( 'php_httpbl_threat_thres' ) == 0 )
       update_option( 'php_httpbl_threat_thres' , '30' );
     if ( get_option( 'php_httpbl_stats_pattern' ) == '' )
-      update_option( 'php_httpbl_stats_pattern' , '<strong>Project Honey Pot Statistics</strong><br/>\n$block of $total suspicious connections blocked' );
+      update_option( 'php_httpbl_stats_pattern' , '<strong>Project Honey Pot Statistics</strong><br/>$block of $total suspicious connections blocked' );
 
     // Get data to be displayed in the form.
     $key = get_option('php_httpbl_key');
@@ -493,7 +493,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   foreach ($results as $row) {
     // Odd and even rows look differently.
     $style = ($i++ % 2 ? ' class="alternate"' : '' );
-    echo "\n\t<tr$style>";
+    echo "<tr$style>";
     foreach ($row as $key => $val) {
       if ($key == 'user_agent')
         // In case the user agent string contains
@@ -506,19 +506,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $octets = explode( '.', $val);
         $plural = ( $octets[1] == 1 ? '' : 's');
         $lastseen = $octets[1]." day$plural";
-        $td = "\n\t\t<td><small>$lastseen</small></td>".
-          "\n\t\t<td><small>".$octets[2].
-          '</small></td>\n\t\t<td><small>'.
+        $td = "<td><small>$lastseen</small></td>".
+          "<td><small>".$octets[2].
+          '</small></td><td><small>'.
           $threat_type[$octets[3]].
           '</small></td>';
       } else {
         // If it's not an http:BL response it's
         // displayed in one column.
-        $td = "\n\t\t<td><small>$val</small></td>";
+        $td = "<td><small>$val</small></td>";
       }
       echo $td;
     }
-    echo "\n\t</tr>";
+    echo "</tr>";
   }
 ?>
   </table>
