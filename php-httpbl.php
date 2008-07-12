@@ -4,7 +4,7 @@ Plugin Name: Project Honey Pot Http:BL
 Plugin URI: http://omninoggin.com
 Description: Project Honey Pot http:BL allows you to verify IP addresses of clients connecting to your blog against the <a href="http://www.projecthoneypot.org/?rf=45626">Project Honey Pot</a> database.
 Author: Thaya Kareeson
-Version: 1.1.0
+Version: 1.2.0
 Author URI: http://omninoggin.com
 */
 
@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   $php_httpbl_home = 'http://omninoggin.com/2008/07/03/project-honey-pot-httpbl-wordpress-plugin/';
 
   // ---------- Activation ---------- //
-  function activate() {
+  function php_httpbl_activate() {
     global $wpdb;
     // set default options on fresh install
     if ( get_option( 'php_httpbl_key' ) == NULL )
@@ -51,8 +51,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
       update_option( 'php_httpbl_stats_link' , 1 );
     if ( get_option( 'php_httpbl_not_logged_ips' ) == NULL )
       update_option( 'php_httpbl_not_logged_ips' , '127.0.0.1' );
-    // create database table
-    php_httpbl_create_log_table();
+
+    // check for log table and create it if necessary
+    if ( !php_httpbl_check_log_table() ) {
+      php_httpbl_create_log_table();
+    }
+
+    // find and set the proper log table name in options
+    php_httpbl_set_log_table_name();
   }
 
   // ---------- Statistics ---------- //
@@ -64,7 +70,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
       time() + get_option('gmt_offset') * 60 * 60 );
     $blocked = ($blocked ? 1 : 0);
     $user_agent = mysql_real_escape_string($user_agent);
-    $query = "INSERT INTO ".$wpdb->prefix."php_httpbl_log ".
+    $query = "INSERT INTO ".$wpdb->prefix.php_httpbl_get_log_table_name().
       "(ip, time, user_agent, php_httpbl_response, blocked)".
       " VALUES ( '$ip', '$time', '$user_agent',".
       "'$response', $blocked);";
@@ -75,8 +81,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   function php_httpbl_get_log()
   {
     global $wpdb;
-    $query = "SELECT * FROM ".$wpdb->prefix.
-      "php_httpbl_log ORDER BY id DESC LIMIT 50";
+    $query = "SELECT * FROM ".$wpdb->prefix.php_httpbl_get_log_table_name().
+      " ORDER BY id DESC LIMIT 50";
     return $wpdb->get_results($query);
   }
 
@@ -86,7 +92,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   {
     global $wpdb, $php_httpbl_stats_data;
     $query = "SELECT blocked,count(*) FROM ".$wpdb->prefix.
-      "php_httpbl_log GROUP BY blocked";
+      php_httpbl_get_log_table_name()." GROUP BY blocked";
     $results = $wpdb->get_results($query,ARRAY_N);
     if ($results) {
       foreach ($results as $row) {
@@ -135,15 +141,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
   }
 
-  // Check whether the table exists
-  function php_httpbl_check_log_table()
+  // Checks whether a table exists
+  function php_httpbl_check_table($table_name)
   {
     global $wpdb;
     $result = $wpdb->get_results('SHOW TABLES');
     if ($result) {
       foreach ($result as $stdobject) {
         foreach ($stdobject as $table) {
-          if ($wpdb->prefix.'php_httpbl_log' == $table) {
+          if ($wpdb->prefix.$table_name == $table) {
             return true;
           }
         }
@@ -152,11 +158,57 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     return false;
   }
 
+  // Check if php_httpbl_log table exists
+  function php_httpbl_check_log_table()
+  {
+    if ( php_httpbl_check_new_log_table() or php_httpbl_check_legacy_log_table() )
+      return true;
+    else
+      return false;
+  }
+
+  // Check if php_httpbl_log table exists
+  function php_httpbl_check_new_log_table()
+  {
+    return php_httpbl_check_table('php_httpbl_log');
+  }
+
+  // Check if httpbl_log table exists
+  function php_httpbl_check_legacy_log_table()
+  {
+    return php_httpbl_check_table('httpbl_log');
+  }
+
+  // Sets the log table name in options (prioritize php_httpbl_log over httpbl_log)
+  function php_httpbl_set_log_table_name()
+  {
+    if ( php_httpbl_check_new_log_table() ) {
+      update_option( 'php_httpbl_log_table_name', 'php_httpbl_log');
+      return true;
+    }
+    elseif ( php_httpbl_check_legacy_log_table() ) {
+      update_option( 'php_httpbl_log_table_name', 'httpbl_log');
+      return true;
+    }
+    else {
+      update_option( 'php_httpbl_log_table_name', 'php_httpbl_log');
+      return false;
+    }
+  }
+
+  // Get log table name from options
+  function php_httpbl_get_log_table_name()
+  {
+    if ( !get_option('php_httpbl_log_table_name') )
+      php_httpbl_set_log_table_name();
+    return get_option('php_httpbl_log_table_name');
+  }
+
   // Truncate the log table
   function php_httpbl_truncate_log_table()
   {
     global $wpdb;
-    $sql = 'TRUNCATE '.$wpdb->prefix.'php_httpbl_log;';
+    $sql = 'TRUNCATE '.$wpdb->prefix.php_httpbl_get_log_table_name().';';
     $wpdb->query($sql);
   }
 
@@ -166,7 +218,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     global $wpdb;
     update_option('php_httpbl_log', false);
     update_option('php_httpbl_stats', false);
-    $sql = 'DROP TABLE '.$wpdb->prefix.'php_httpbl_log;';
+    $sql = 'DROP TABLE '.$wpdb->prefix.php_httpbl_get_log_table_name().';';
     $wpdb->query($sql);
   }
 
@@ -327,9 +379,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     if (isset($_POST['php_httpbl_create']))
       php_httpbl_create_log_table();
 
-    // If we log, but there's no table.
-    if (get_option('php_httpbl_log') and !php_httpbl_check_log_table()) {
-      php_httpbl_create_log_table();
+    // If we log, check if we have a log table and creat it if we don't.
+    if (get_option('php_httpbl_log')) {
+      if (!php_httpbl_set_log_table_name()) {
+        php_httpbl_create_log_table();
+        php_httpbl_set_log_table_name();
+      }
     }
 
     // If it seems like the first launch,
@@ -472,7 +527,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   <input type='submit' name='php_httpbl_truncate' value='Purge the log table' onClick='return httpblConfirm("purge")'/>
   <input type='submit' name='php_httpbl_drop' value='Delete the log table' style="margin:0 0 0 30px" onClick='return httpblConfirm("delete")'/>
   </p></form>
-  <p>A list of 50 most recent visitors listed in the Project Honey Pot's database.</p>
+  <p>A list of 50 most recent visitors listed in the Project Honey Pot's database. (Using table <strong><?php echo php_httpbl_get_log_table_name(); ?></strong>)</p>
   <table cellpadding="5px" cellspacing="3px">
   <tr>
     <th>ID</th>
@@ -541,7 +596,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
   // ---------- hooks ---------- //
   if ( function_exists('register_activation_hook') ) {
-    register_activation_hook(__FILE__, 'activate');
+    register_activation_hook(__FILE__, 'php_httpbl_activate');
   }
 
   if ( function_exists('add_action') ) {
