@@ -4,7 +4,7 @@ Plugin Name: Project Honey Pot Http:BL
 Plugin URI: http://omninoggin.com
 Description: Project Honey Pot http:BL allows you to verify IP addresses of clients connecting to your blog against the <a href="http://www.projecthoneypot.org/?rf=45626">Project Honey Pot</a> database.
 Author: Thaya Kareeson
-Version: 1.2.0
+Version: 1.3.0
 Author URI: http://omninoggin.com
 */
 
@@ -25,7 +25,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-  $php_httpbl_home = 'http://omninoggin.com/2008/07/03/project-honey-pot-httpbl-wordpress-plugin/';
+  $php_httpbl_home = 'http://omninoggin.com/projects/wordpress-plugins/project-honey-pot-httpbl-wordpress-plugin/';
 
   // ---------- Activation ---------- //
   function php_httpbl_activate() {
@@ -71,7 +71,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     $blocked = ($blocked ? 1 : 0);
     $user_agent = mysql_real_escape_string($user_agent);
     $query = "INSERT INTO ".$wpdb->prefix.php_httpbl_get_log_table_name().
-      "(ip, time, user_agent, php_httpbl_response, blocked)".
+      "(ip, time, user_agent, httpbl_response, blocked)".
       " VALUES ( '$ip', '$time', '$user_agent',".
       "'$response', $blocked);";
     $results = $wpdb->query($query);
@@ -232,7 +232,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
       . '  `ip` VARCHAR( 16 ) NOT NULL DEFAULT \'unknown\' ,'
       . '  `time` DATETIME NOT NULL ,'
       . '  `user_agent` VARCHAR( 255 ) NOT NULL DEFAULT \'unknown\' ,'
-      . '  `php_httpbl_response` VARCHAR( 16 ) NOT NULL ,'
+      . '  `httpbl_response` VARCHAR( 16 ) NOT NULL ,'
       . '  `blocked` BOOL NOT NULL'
       . ')';
     $wpdb->query($sql);
@@ -429,6 +429,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     // The page contents.
 ?>
+<style type='text/css'>
+  .php_httpbl_fieldset {
+    border:1px solid #ccc;
+    margin:10px;
+    padding:20px;
+  }
+</style>
 <div class='wrap'>
   <h2>Project Honey Pot Http:BL</h2>
 <?php
@@ -444,57 +451,57 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   <h3>Configuration</h3>
   <form action='' method='post' id='php_httpbl_conf'>
   <h4>Main options</h4>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Project Honey Pot Http:BL Access Key <input type='text' name='key' size='16' value='<?php echo $key ?>' /> (example: abcdefghijkl)</p>
     <p><small>An access key is required to perform a query against the Project Honey Pot database.  You can get your key at <a href="http://www.projecthoneypot.org/httpbl_configure.php">http:BL Access Management page</a>. You need to register for a free account at the Project Honey Pot website to get one.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Age threshold <input type='text' name='age_thres' size='3' value='<?php echo $age_thres ?>'/> day(s)</p>
     <p><small>Project Honey Pot's Http:BL service provides you information about the date of the last activity of a checked IP.  Because some information in the Project Honey Pot database may be obsolete, you may set an age threshold for the data you use. If the verified IP hasn't been active within the threshold time frame, it will be regarded as harmless.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Threat score threshold <input type='text' name='threat_thres' size='4' value='<?php echo $threat_thres ?>'/> (0-255)</p>
     <p><small>Project Honey Pot assigns a threat score to each suspicious IP address based on the IP's activity and the damage done during the visits. The score is a number between 0 and 255, where 0 is no threat at all and 255 is extremely harmful. IP addresses with a score greater than the given threat score threshold will be regarded as harmful.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <label>Types of visitors to be treated as malicious</label>
     <p><input type='checkbox' name='deny_1' value='1' <?php echo $deny_checkbox[1] ?>/> Suspicious</p>
     <p><input type='checkbox' name='deny_2' value='1' <?php echo $deny_checkbox[2] ?>/> Harvesters</p>
     <p><input type='checkbox' name='deny_4' value='1' <?php echo $deny_checkbox[4] ?>/> Comment spammers</p>
     <p><small>The fields above allow you to specify which types of visitors should be regarded as harmful. It is recommended to check all of them.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Personal Honey Pot Link <input type='text' name='hp' size='60' value='<?php echo $hp ?>'/> (example: http://example.com/my-honey-pot.php)</p>
     <p><small>If you've got a Honey Pot (Bot Trap) you may redirect all unwelcomed visitors to it by specifying its url above. If you leave the following field empty, all harmful visitors will be given a blank page instead of your blog.  For more information on installing your own Bot Trap, see <a href="http://omninoggin.com/2008/05/30/list-poisoning-email-harvesters/">List Poisoning Email Harvesters</a>.  You can also specify other people's Bot Trip into this field; for example, this field comes pre-filled with "http://omninoggin.com/suspicious" (which is my own personal Bot Trap).</small></p>
     </fieldset>
     <p><small>More details on Project Honey Pot Http:BL are available at the <a href="http://www.projecthoneypot.org/httpbl_api.php">http:BL API Specification page</a>.</small></p>
   <h4>Logging options</h4>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Enable logging <input type='checkbox' name='enable_log' value='1' <?php echo $log_checkbox ?>/></p>
     <p><small>If you enable logging all visitors which are recorded in the Project Honey Pot's database will be logged in the database and listed in the table below.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Log only blocked visitors <input type='checkbox' name='log_blocked_only' value='1' <?php echo $log_blocked_only_checkbox ?>/></p>
     <p><small>Enabling this option will result in logging only blocked visitors. The rest shall be forgotten.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Not logged IP addresses<br/>
       <textarea name='not_logged_ips' rows='4' cols='60'><?php echo $not_logged_ips ?></textarea>
     </p>
     <p><small>Enter a space-separated list of IP addresses which will not be recorded in the log.</small></p>
     </fieldset>
   <h4>Statistics options</h4>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Enable stats <input type='checkbox' name='enable_stats' value='1' <?php echo $stats_checkbox ?>/></p>
     <p><small>If stats are enabled the plugin will get information about its performance from the database, allowing it to be displayed using <code>php_httpbl_stats()</code> function.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <p>Output pattern<br/>
       <textarea name='stats_pattern' rows='4' cols='60'><?php echo $stats_pattern ?></textarea>
     </p>
     <p><small>This input field allows you to specify the output format of the statistics. You can use following variables: <code>$block</code> will be replaced with the number of blocked visitors, <code>$pass</code> with the number of logged but not blocked visitors, and <code>$total</code> with the total number of entries in the log table. HTML is welcome. PHP won't be compiled.</small></p>
     </fieldset>
-    <fieldset>
+    <fieldset class="php_httpbl_fieldset">
     <label>Output Link</label>
     <p><input type="radio" name="stats_link" value="0" <?php echo $stats_link_radio[0]; ?>/> No Thanks!  I'll write a post about this plugin!</p>
     <p><input type="radio" name="stats_link" value="1" <?php echo $stats_link_radio[1]; ?>/> <a href="<?php echo $php_httpbl_home; ?>">Project Honey Pot Http:BL WordPress Plugin</a></p>
@@ -556,7 +563,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $val = htmlentities($val, ENT_QUOTES);
       if ($key == 'blocked')
         $val = ($val ? '<strong>YES</strong>' : 'No');
-      if ($key == 'php_httpbl_response') {
+      if ($key == 'httpbl_response') {
         // Make the http:BL response human-readible.
         $octets = explode( '.', $val);
         $plural = ( $octets[1] == 1 ? '' : 's');

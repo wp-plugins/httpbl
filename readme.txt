@@ -3,8 +3,8 @@ Tags: anti-spam, spam, harvester, crawler, comment, filter, block, project honey
 Contributors: Thaya Kareeson
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=madeinthayaland@gmail.com&currency_code=USD&amount=&return=&item_name=Donate+a+cup+of+coffee+or+two+for+Project+Honey+Pot+HttpBL+WordPress+Plugin
 Requires at least: 2.5
-Tested up to: 2.5.1
-Stable Tag: 1.2.0
+Tested up to: 2.6
+Stable Tag: 1.3.0
 
 Project Honey Pot Http:BL allows you to verify IP addresses of clients connecting to your blog against the <a href="http://www.projecthoneypot.org/?rf=45626">Project Honey Pot</a> database.
 
@@ -63,6 +63,9 @@ activate the plugin and use it.
 
 == Changelog ==
 
+1.3.0
+- Fixed a major bug in the previous release that broke logging.
+- Added CSS to admin menu to let user identify options groups easier.
 1.2.0
 - Added backwards compatibility with Jan's original plugin (using table
   'httpbl_log' for logging).
