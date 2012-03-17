@@ -2,8 +2,8 @@
 Contributors: janstepien, madeinthayaland, M66B
 Tags: comments, spam, http:BL
 Requires at least: 2.0
-Tested up to: 2.9.2
-Stable tag: 1.8
+Tested up to: 3.3.1
+Stable tag: 1.9
 
 http:BL WordPress Plugin allows you to verify IP addresses of clients
 connecting to your blog against the Project Honey Pot database.
@@ -20,10 +20,12 @@ potentially harmful clients are denied from accessing your blog and therefore
 abusing it.
 
 
-= Your Feedback Matters =
+= Call For Maintainers =
 
-Bugs to report? Feature requests? Criticism? New ideas? We want to hear from
-you! Do not hesitate. Get in touch with us and share your views.
+As my connection with the WordPress platform and the PHP ecosystem has weakened
+I'm looking for an enthusiastic developer who'd like to dedicate her or his
+time to further development and maintenance of this plugin. Don't hesitate to
+get in touch if me if you consider yourself a good candidate.
 
 == Installation ==
 
@@ -52,6 +54,12 @@ to find his e-mail address and Jabber ID.
 
 == Changelog ==
 
+= 1.9 =
+* Patches from Eric Seiler including
+  * an update to new roles model
+  * less notices with WP_DEBUG == true
+  * a missing call to httpbl_check_log_table
+
 = 1.8 =
 * If a honey pot link is specified an invisible link will be inserted on every page automatically to help the project
 * Fixed combinations of specific and generic threat types
@@ -62,6 +70,9 @@ to find his e-mail address and Jabber ID.
 * Added options to specify threat level per threat type
 
 == Upgrade Notice ==
+
+= 1.9 =
+Minor changes and updates. See the change log for details.
 
 = 1.8 =
 Adding honey pot, fixed threat combinations, updated documentation.
